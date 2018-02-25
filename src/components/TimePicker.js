@@ -1,37 +1,49 @@
 import React from 'react'
 import styled, { css, ThemeProvider } from 'styled-components'
-import moment from 'moment'
 import media from '../utils/media'
+import { zeroPad } from '../utils/string'
 import Clock from './Clock'
 
 class TimePicker extends React.Component {
   state = {
     activeView: Clock.ACTIVE_VIEW.HOURS,
-    time: { hours: moment().format('hh'), minutes: moment().minutes()}
+    time: { hours: 12, minutes: 0}
   }
 
   handleTimeChange = (activeView, hours, minutes) => {
-    console.log(activeView, hours, minutes)
     const time = { hours, minutes }
     this.setState({ activeView, time })
   }
 
+  changeView = (activeView) => {
+    this.setState({ activeView })
+  }
+
+  mergeTheme = () => Object.assign(DefaultTheme, this.props.theme)
+
   render() {
     return (
-      <ThemeProvider theme={this.props.theme || DefaultTheme} >
+      <ThemeProvider theme={this.mergeTheme()} >
         <Wrapper>
           <Header>
-            <Hours active={this.state.activeView === Clock.ACTIVE_VIEW.HOURS}>
-              {this.state.time.hours}
+            <Hours
+              active={this.state.activeView === Clock.ACTIVE_VIEW.HOURS}
+              onClick={() => this.changeView(Clock.ACTIVE_VIEW.HOURS)}
+            >
+              {zeroPad(this.state.time.hours)}
             </Hours>
             <Separator>:</Separator>
-            <Minutes active={this.state.activeView === Clock.ACTIVE_VIEW.MINUTES}>
-              {this.state.time.minutes}
+            <Minutes
+              active={this.state.activeView === Clock.ACTIVE_VIEW.MINUTES}
+              onClick={() => this.changeView(Clock.ACTIVE_VIEW.MINUTES)}
+            >
+              {zeroPad(this.state.time.minutes)}
             </Minutes>
           </Header>
           <Content>
             <ClockWrapper>
               <Clock
+                activeView={this.state.activeView}
                 onChange={this.handleTimeChange}
                 selectedHours={this.state.time.hours}
                 selectedMinutes={this.state.time.minutes}
@@ -68,7 +80,10 @@ const Wrapper = styled.div`
 
 const Header = styled.div`
   background: ${props => props.theme.headerBg};
+  border-radius: 3px 3px 0 0;
   color: ${props => props.theme.headerColor};
+  min-height: 96px;
+  min-width: 170px;
   flex-grow: 0.3;
   display: flex;
   justify-content: center;
@@ -76,6 +91,7 @@ const Header = styled.div`
   font-size: 20px;
   ${media.landscape.phone`
     flex-grow: 0.5;
+    border-radius: 3px 0 0 3px;
   `}
 `
 
@@ -116,6 +132,7 @@ const Footer = styled.div`
   align-items: center;
   justify-content: flex-end;
   padding-right: 15px;
+  min-height: 35px;
 `
 
 const Button = styled.button`
@@ -124,6 +141,8 @@ const Button = styled.button`
   margin: 3px;
   font-weight: bolder;
   color: ${props => props.theme.headerBg};
+  outline: none;
+  cursor: pointer;
 `
 
 const DefaultTheme = {
@@ -133,9 +152,16 @@ const DefaultTheme = {
   headerBg: '#009A8A',
   headerColor: '#A7E1DC',
   headerActiveColor: '#FFFFFF',
-  landscapeWidth: 400,
+  landscapeWidth: 512,
   landscapeHeight: 300,
   width: 300,
+  Clock: {
+    background: '#EDEDED',
+    armBg: '#009A8A',
+    digitColor: '#696768',
+    digitActiveBg: '#009A8A',
+    digitActiveColor: '#ffffff'
+  }
 }
 
 export default TimePicker

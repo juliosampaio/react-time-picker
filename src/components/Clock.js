@@ -1,5 +1,6 @@
 import React from 'react'
-import styled, { css } from 'styled-components';
+import styled, { css, keyframes } from 'styled-components';
+import { zeroPad } from '../utils/string'
 
 const HOURS = 'HOURS'
 const MINUTES = 'MINUTES'
@@ -9,20 +10,31 @@ export default class Clock extends React.Component {
     activeView: HOURS,
     hours: [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2],
     minutes: [
-      "15","16","17","18","19","20","21","22","23","24",
-      "25","26","27","28","29","30","31","32","33","34",
-      "35","36","37","38","39","40","41","42","43","44",
-      "45","46","47","48","49","50","51","52","53","54",
-      "55","56","57","58","59","00","01","02","03","04",
-      "05","06","07","08","09","10","11","12","13","14"
+      15,16,17,18,19,20,21,22,23,24,25,26,
+      27,28,29,30,31,32,33,34,35,36,37,38,
+      39,40,41,42,43,44,45,46,47,48,49,50,
+      51,52,53,54,55,56,57,58,59,0,1,2,3,
+      4,5,6,7,8,9,10,11,12,13,14
     ],
     selectedHours: 12,
-    selectedHours: '00'
+    selectedMinutes: '00'
+  }
+
+  componentWillReceiveProps({ activeView, selectedHours, selectedMinutes }) {
+    if (activeView !== this.state.activeView) {
+      this.setState({ activeView })
+    }
+    if (selectedHours !== this.state.selectedHours) {
+      this.setState({ selectedHours })
+    }
+    if (selectedMinutes !== this.state.selectedMinutes) {
+      this.setState({ selectedMinutes })
+    }
   }
 
   componentWillMount = () => {
-    const { selectedHours, selectedMinutes } = this.props
-    this.setState({ selectedHours, selectedMinutes })
+    const { activeView, selectedHours, selectedMinutes } = this.props
+    this.setState({ activeView, selectedHours, selectedMinutes })
   }
 
   activateView = (activeView) => {
@@ -30,44 +42,44 @@ export default class Clock extends React.Component {
     this.props.onChange(activeView, this.state.selectedHours, this.state.selectedMinutes)
   }
 
-  selectHours = (hours) => {
-    this.setState({ selectedHours: hours })
-    // this.activateView(MINUTES)
-    this.props.onChange(this.state.activeView, hours, this.state.selectedMinutes)
+  selectHours = (selectedHours) => {
+    this.setState({ selectedHours })
+    this.props.onChange(this.state.activeView, selectedHours, this.state.selectedMinutes)
   }
 
-  selectMinutes = (minutes) => {
-    this.setState({ selectedMinutes: minutes })
-    // this.activateView(HOURS)
-    this.props.onChange(this.state.activeView, this.state.selectedHours, minutes)
+  selectMinutes = (selectedMinutes) => {
+    this.setState({ selectedMinutes })
+    this.props.onChange(this.state.activeView, this.state.selectedHours, selectedMinutes)
   }
 
-  render(){
+  render() {
     return (
       <ClockWrapper>
         <ClockCenter />
-        <DigitsContainer active={this.state.activeView === HOURS}>
+        <DigitsContainer active={this.state.activeView === HOURS} className="hide">
           {this.state.hours.map((d, idx) =>
             <Digit
-              active={this.state.selectedHours == d}
+              draggable={true}
+              active={this.state.selectedHours === d}
               deg={idx * 30}
               key={d}
               major
               onClick={() => this.activateView(MINUTES)}
               onMouseOver={() => this.selectHours(d)}
-            >{d}</Digit>
+            >{zeroPad(d)}</Digit>
           )}
         </DigitsContainer>
         <DigitsContainer active={this.state.activeView === MINUTES}>
           {this.state.minutes.map((d, idx) =>
             <Digit
-              active={this.state.selectedMinutes == d}
+              draggable={true}
+              active={this.state.selectedMinutes === d}
               deg={idx * 6}
               key={d}
               major={0+d % 5 === 0 }
               onClick={() => this.activateView(HOURS)}
               onMouseOver={() => this.selectMinutes(d)}
-            >{d}</Digit>
+            >{zeroPad(d)}</Digit>
           )}
         </DigitsContainer>
       </ClockWrapper>
@@ -75,12 +87,21 @@ export default class Clock extends React.Component {
   }
 }
 
+const showAnimation = keyframes`
+  from { opacity: 0; }
+  to { opacity: 1; }
+`
+
+const hideAnimation = keyframes`
+  from { opacity: 0; }
+  to { opacity: 1; }
+`
 
 const ClockWrapper = styled.div`
   width: 250px;
   height: 250px;
   border-radius: 50%;
-  background: #EDEDED;
+  background: ${props => props.theme.Clock.background};
   display: flex;
   justify-content: center;
   align-items: center;
@@ -94,12 +115,13 @@ const ClockCenter = styled.div`
   width: 6px;
   height: 6px;
   margin: -3px;
-  background: #009A8A;
+  background: ${props => props.theme.Clock.armBg};
   border-radius: 50%;
 `
 
 const DigitsContainer = styled.ul`
   display: ${props => props.active ? 'block' : 'none'};
+  animation: ${props => props.active ? showAnimation : hideAnimation} 0.8s linear;
   padding: 0;
   margin: 0;
   list-style: none;
@@ -110,7 +132,7 @@ const DigitsContainer = styled.ul`
 `
 
 const Digit = styled.li`
-  color: #696768;
+  color: ${props => props.theme.Clock.digitColor};
   cursor: pointer;
   font-weight: bold;
   font-size: 0;
@@ -133,13 +155,13 @@ const Digit = styled.li`
     }
   `}
   ${props => props.active && css`
-    background-color: #009A8A;
-    color: #ffffff;
+    background-color: ${props => props.theme.Clock.digitActiveBg};
+    color: ${props => props.theme.Clock.digitActiveColor};
     &:before {
       content: '';
-      background: #009A8A;
-      width: 90px;
-      border: 1px solid #009A8A;
+      background: ${props => props.theme.Clock.digitActiveBg};
+      width: 85px;
+      border: 1px solid ${props => props.theme.Clock.digitActiveBg};
       position: absolute;
       top: 50%;
       left: 50%;
@@ -148,7 +170,7 @@ const Digit = styled.li`
     }
     &:after {
       content: '';
-      background: #ffffff;
+      background: ${props => props.theme.Clock.digitActiveColor};
       width: 6px;
       height: 6px;
       margin: -3px;
@@ -159,9 +181,10 @@ const Digit = styled.li`
     }
   `}
   &:hover {
-    background-color: #009A8A;
-    color: #ffffff;
+    background-color: ${props => props.theme.Clock.digitActiveBg};
+    color: ${props => props.theme.Clock.digitActiveColor};
     opacity: 0.9;
+    transition: all 0.4s;
   }
 `
 
