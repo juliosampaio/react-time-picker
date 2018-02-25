@@ -1,11 +1,19 @@
 import React from 'react'
-import styled, { ThemeProvider } from 'styled-components'
+import styled, { css, ThemeProvider } from 'styled-components'
+import moment from 'moment'
 import media from '../utils/media'
 import Clock from './Clock'
 
 class TimePicker extends React.Component {
   state = {
-    time: { hours: 18, minutes: 40}
+    activeView: Clock.ACTIVE_VIEW.HOURS,
+    time: { hours: moment().format('hh'), minutes: moment().minutes()}
+  }
+
+  handleTimeChange = (activeView, hours, minutes) => {
+    console.log(activeView, hours, minutes)
+    const time = { hours, minutes }
+    this.setState({ activeView, time })
   }
 
   render() {
@@ -13,13 +21,21 @@ class TimePicker extends React.Component {
       <ThemeProvider theme={this.props.theme || DefaultTheme} >
         <Wrapper>
           <Header>
-            <Hours className="active">{this.state.time.hours}</Hours>
+            <Hours active={this.state.activeView === Clock.ACTIVE_VIEW.HOURS}>
+              {this.state.time.hours}
+            </Hours>
             <Separator>:</Separator>
-            <Minutes>{this.state.time.minutes}</Minutes>
+            <Minutes active={this.state.activeView === Clock.ACTIVE_VIEW.MINUTES}>
+              {this.state.time.minutes}
+            </Minutes>
           </Header>
           <Content>
             <ClockWrapper>
-              <Clock />
+              <Clock
+                onChange={this.handleTimeChange}
+                selectedHours={this.state.time.hours}
+                selectedMinutes={this.state.time.minutes}
+              />
             </ClockWrapper>
             <Footer>
               <Button>{this.props.cancelText}</Button>
@@ -66,9 +82,9 @@ const Header = styled.div`
 const HeaderItem = styled.h2`
   cursor: pointer;
   margin: 2px;
-  &.active {
+  ${props => props.active && css`
     color: ${props => props.theme.headerActiveColor};
-  }
+  `}
 `
 
 const Hours = HeaderItem.extend``
