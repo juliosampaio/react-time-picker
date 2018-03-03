@@ -1,5 +1,6 @@
 import React from 'react'
 import styled, { css, keyframes } from 'styled-components';
+import media from '../utils/media'
 import { zeroPad } from '../utils/string'
 
 const HOURS = 'HOURS'
@@ -59,26 +60,28 @@ export default class Clock extends React.Component {
         <DigitsContainer active={this.state.activeView === HOURS} className="hide">
           {this.state.hours.map((d, idx) =>
             <Digit
-              draggable={true}
               active={this.state.selectedHours === d}
               deg={idx * 30}
               key={d}
               major
               onClick={() => this.activateView(MINUTES)}
               onMouseOver={() => this.selectHours(d)}
+              onTouchStart={() => this.selectHours(d)}
+              onTouchEnd={() => this.selectHours(d)}
             >{zeroPad(d)}</Digit>
           )}
         </DigitsContainer>
         <DigitsContainer active={this.state.activeView === MINUTES}>
           {this.state.minutes.map((d, idx) =>
             <Digit
-              draggable={true}
               active={this.state.selectedMinutes === d}
               deg={idx * 6}
               key={d}
               major={0+d % 5 === 0 }
               onClick={() => this.activateView(HOURS)}
               onMouseOver={() => this.selectMinutes(d)}
+              onTouchStart={() => this.selectMinutes(d)}
+              onTouchEnd={() => this.selectMinutes(d)}
             >{zeroPad(d)}</Digit>
           )}
         </DigitsContainer>
@@ -180,11 +183,13 @@ const Digit = styled.li`
       left: 50%;
     }
   `}
-  &:hover {
-    background-color: ${props => props.theme.Clock.digitActiveBg};
-    color: ${props => props.theme.Clock.digitActiveColor};
-    opacity: 0.9;
-    transition: all 0.4s;
-  }
+  ${media.size.desktop`
+    &:hover {
+      background-color: ${props => props.theme.Clock.digitActiveBg};
+      color: ${props => props.theme.Clock.digitActiveColor};
+      opacity: 0.9;
+      transition: all 0.4s;
+    }
+  `}
 `
 
