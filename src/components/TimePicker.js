@@ -40,6 +40,7 @@ class TimePicker extends React.Component {
     return (
       <ThemeProvider theme={this.mergeTheme()} >
         <RootWrapper>
+          <Overlay show={this.props.show} onClick={this.sendCancel} />
           <TimePickerWrapper show={this.props.show}>
             <Header>
               <Hours
@@ -82,6 +83,17 @@ const RootWrapper = styled.div`
 
 `
 
+const Overlay = styled.div`
+  background: ${props => props.theme.overlayBg};
+  height: 100%;
+  left: 0;
+  display: ${props => props.show ? 'flex' : 'none'};
+  position: absolute;
+  top: 0;
+  width: 100%;
+  z-index: 0;
+`
+
 const TimePickerWrapper = styled.div`
   position: absolute;
   display: ${props => props.show ? 'flex' : 'none'};
@@ -98,6 +110,7 @@ const TimePickerWrapper = styled.div`
     height: ${props => props.theme.landscapeHeight}px;
     flex-direction: row;
   `};
+  z-index: 1;
 `;
 
 const Header = styled.div`
@@ -178,6 +191,7 @@ const DefaultTheme = {
   headerActiveColor: "#FFFFFF",
   landscapeWidth: 512,
   landscapeHeight: 300,
+  overlayBg: 'rgba(0,0,0,0.5)',
   width: 300,
   Clock: {
     background: "#EDEDED",
