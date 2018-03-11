@@ -24,11 +24,11 @@ class TimePicker extends React.Component {
 
   sendTime = () => {
     this.props.onTimeChange(this.state.time);
-  };
+  }
 
   sendCancel = () => {
     this.props.onCancel();
-  };
+  }
 
   render() {
     return (
@@ -67,6 +67,11 @@ class TimePicker extends React.Component {
       </ThemeProvider>
     );
   }
+}
+
+TimePicker.defaultProps = {
+  onTimeChange: () => null,
+  onCancel: () => null
 }
 
 const Wrapper = styled.div`

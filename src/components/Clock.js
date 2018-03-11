@@ -78,7 +78,7 @@ export default class Clock extends React.Component {
               deg={idx * 6}
               key={d}
               major={0+d % 5 === 0 }
-              onClick={() => this.activateView(HOURS)}
+              onClick={() => this.selectMinutes(d)}
               onMouseOver={() => this.selectMinutes(d)}
               onTouchStart={() => this.selectMinutes(d)}
               onTouchEnd={() => this.selectMinutes(d)}
