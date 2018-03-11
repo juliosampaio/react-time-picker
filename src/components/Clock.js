@@ -18,7 +18,8 @@ export default class Clock extends React.Component {
       4,5,6,7,8,9,10,11,12,13,14
     ],
     selectedHours: 12,
-    selectedMinutes: '00'
+    selectedMinutes: '00',
+    selectOnHover: true
   }
 
   componentWillReceiveProps({ activeView, selectedHours, selectedMinutes }) {
@@ -53,6 +54,11 @@ export default class Clock extends React.Component {
     this.props.onChange(this.state.activeView, this.state.selectedHours, selectedMinutes)
   }
 
+  onMinuteClick = (minutes) => {
+    this.selectMinutes(minutes)
+    this.setState({ selectOnHover: !this.state.selectOnHover })
+  }
+
   render() {
     return (
       <ClockWrapper>
@@ -78,10 +84,10 @@ export default class Clock extends React.Component {
               deg={idx * 6}
               key={d}
               major={0+d % 5 === 0 }
-              onClick={() => this.selectMinutes(d)}
-              onMouseOver={() => this.selectMinutes(d)}
-              onTouchStart={() => this.selectMinutes(d)}
-              onTouchEnd={() => this.selectMinutes(d)}
+              onClick={() => this.onMinuteClick(d)}
+              onMouseOver={() => this.state.selectOnHover && this.selectMinutes(d)}
+              onTouchStart={() => this.state.selectOnHover && this.selectMinutes(d)}
+              onTouchEnd={() => this.state.selectOnHover && this.selectMinutes(d)}
             >{zeroPad(d)}</Digit>
           )}
         </DigitsContainer>
