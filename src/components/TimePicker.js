@@ -1,12 +1,15 @@
 import React, { Fragment } from 'react'
 import styled, { css, ThemeProvider } from 'styled-components'
+import moment from 'moment'
 import media from '../utils/media'
 import { zeroPad } from '../utils/string'
 import Clock from './Clock'
 
 class TimePicker extends React.Component {
+  defaultFormat = 'HH:mm'
   state = {
     activeView: Clock.ACTIVE_VIEW.HOURS,
+    format: '',
     time: { hours: 12, minutes: 0 }
   };
 
@@ -22,7 +25,11 @@ class TimePicker extends React.Component {
   mergeTheme = () => Object.assign(DefaultTheme, this.props.theme);
 
   sendTime = () => {
-    this.props.onTimeChange(this.state.time);
+    const { hours, minutes } = this.state.time
+    const time = `${hours}:${minutes}:00`;
+    const format = this.props.format || this.defaultFormat
+    var formatted = moment(time, 'HH:mm:ss').format(format);
+    this.props.onTimeChange(formatted);
   }
 
   sendCancel = () => {
