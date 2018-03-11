@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import TimePicker from './components/TimePicker'
+import React, { Component, Fragment } from 'react';
+import { InputTimePicker } from './components/InputTimePicker'
 import './App.css';
 
 const getTime = (time) => {
@@ -7,12 +7,30 @@ const getTime = (time) => {
 }
 
 class App extends Component {
+
+  state = {
+    showTimePicker: false
+  }
+
+  showTimePicker = () => {
+    this.setState({ showTimePicker: true })
+  }
+
+  hideTimePicker = () => {
+    this.setState({ showTimePicker: false })
+  }
+
   render() {
-    return <TimePicker
-      onTimeChange={getTime}
-      okText="OK"
-      cancelText="CANCEL"
-    />
+    return (
+      <Fragment>
+        <InputTimePicker
+          placeholder="Pick a time"
+        />
+        <InputTimePicker
+          placeholder="Pick a time again"
+        />
+      </Fragment>
+    )
   }
 }
 

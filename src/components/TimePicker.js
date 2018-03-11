@@ -1,9 +1,8 @@
-import React from "react";
-import styled, { css, ThemeProvider } from "styled-components";
-import { func } from "prop-types";
-import media from "../utils/media";
-import { zeroPad } from "../utils/string";
-import Clock from "./Clock";
+import React, { Fragment } from 'react'
+import styled, { css, ThemeProvider } from 'styled-components'
+import media from '../utils/media'
+import { zeroPad } from '../utils/string'
+import Clock from './Clock'
 
 class TimePicker extends React.Component {
   state = {
@@ -32,55 +31,54 @@ class TimePicker extends React.Component {
 
   render() {
     return (
-      <ThemeProvider theme={this.mergeTheme()}>
-        <Wrapper>
-          <Header>
-            <Hours
-              active={this.state.activeView === Clock.ACTIVE_VIEW.HOURS}
-              onClick={() => this.changeView(Clock.ACTIVE_VIEW.HOURS)}
-            >
-              {zeroPad(this.state.time.hours)}
-            </Hours>
-            <Separator>:</Separator>
-            <Minutes
-              active={this.state.activeView === Clock.ACTIVE_VIEW.MINUTES}
-              onClick={() => this.changeView(Clock.ACTIVE_VIEW.MINUTES)}
-            >
-              {zeroPad(this.state.time.minutes)}
-            </Minutes>
-          </Header>
-          <Content>
-            <ClockWrapper>
-              <Clock
-                activeView={this.state.activeView}
-                onChange={this.handleTimeChange}
-                selectedHours={this.state.time.hours}
-                selectedMinutes={this.state.time.minutes}
-              />
-            </ClockWrapper>
-            <Footer>
-              <Button onClick={this.sendCancel}>{this.props.cancelText}</Button>
-              <Button onClick={this.sendTime}>{this.props.okText}</Button>
-            </Footer>
-          </Content>
-        </Wrapper>
+      <ThemeProvider theme={this.mergeTheme()} >
+        <RootWrapper>
+          <TimePickerWrapper show={this.props.show}>
+            <Header>
+              <Hours
+                active={this.state.activeView === Clock.ACTIVE_VIEW.HOURS}
+                onClick={() => this.changeView(Clock.ACTIVE_VIEW.HOURS)}
+              >
+                {zeroPad(this.state.time.hours)}
+              </Hours>
+              <Separator>:</Separator>
+              <Minutes
+                active={this.state.activeView === Clock.ACTIVE_VIEW.MINUTES}
+                onClick={() => this.changeView(Clock.ACTIVE_VIEW.MINUTES)}
+              >
+                {zeroPad(this.state.time.minutes)}
+              </Minutes>
+            </Header>
+            <Content>
+              <ClockWrapper>
+                <Clock
+                  activeView={this.state.activeView}
+                  onChange={this.handleTimeChange}
+                  selectedHours={this.state.time.hours}
+                  selectedMinutes={this.state.time.minutes}
+                />
+              </ClockWrapper>
+              <Footer>
+                <Button onClick={this.sendCancel}>{this.props.cancelText}</Button>
+                <Button onClick={this.sendTime}>{this.props.okText}</Button>
+              </Footer>
+            </Content>
+          </TimePickerWrapper>
+          {this.props.children}
+        </RootWrapper>
       </ThemeProvider>
     );
   }
 }
 
-TimePicker.defaultProps = {
-  onTimeChange: () => null,
-  onCancel: () => null
-}
+const RootWrapper = styled.div`
 
-const Wrapper = styled.div`
+`
+
+const TimePickerWrapper = styled.div`
   position: absolute;
-  display: flex;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
+  display: ${props => props.show ? 'flex' : 'none'};
+  top: 0; left: 0; bottom: 0; right: 0;
   margin: auto;
   background: ${props => props.theme.background};
   border-radius: 3px;
@@ -183,6 +181,12 @@ const DefaultTheme = {
   }
 };
 
-TimePicker.propTypes = {};
+TimePicker.defaultProps = {
+  onTimeChange: () => null,
+  onCancel: () => null,
+  show: false,
+  cancelText: 'CANCEL',
+  okText: 'OK',
+}
 
 export default TimePicker;
